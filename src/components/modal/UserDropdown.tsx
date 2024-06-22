@@ -8,10 +8,12 @@ import { toast } from 'sonner';
 import { Darkmode } from '../Darkmode';
 import { useRouter } from 'next/navigation';
 import useAuth from '../hooks/useAuth';
+import { User2 } from 'lucide-react';
 
-export const logout = () => {
+export const logout = (router : any) => {
     Cookies.remove('authtoken');
     toast("You have logged out");
+    router.refresh()
 }
 
 function UserDropdown() {
@@ -26,21 +28,23 @@ function UserDropdown() {
                     size="icon"
                     className="overflow-hidden rounded-full"
                 >
-                    <Image
+                    <User2 />
+                    {/* <Image
                         src="https://res.cloudinary.com/dkibnftac/image/upload/v1690208728/deku_ggqhox.jpg"
                         width={36}
                         height={36}
                         alt="Avatar"
                         className="overflow-hidden rounded-full"
-                    />
+                    /> */}
                 </Button>
             </DropdownMenuTrigger>
             <DropdownMenuContent align="end">
                 <DropdownMenuLabel>My Account</DropdownMenuLabel>
                 <DropdownMenuSeparator />
                 {/* <Darkmode /> */}
+
                 <DropdownMenuItem onClick={() => router.push(`/${id}`)}>Profile</DropdownMenuItem>
-                <DropdownMenuItem onClick={logout}>Logout</DropdownMenuItem>
+                <DropdownMenuItem onClick={() => logout(router)}>Logout</DropdownMenuItem>
             </DropdownMenuContent>
         </DropdownMenu>
     )

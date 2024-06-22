@@ -17,22 +17,31 @@ import Loader from '@/components/sections/Loader';
 
 function Page() {
     const [rooms, setRooms] = useState<Room_data[]>([]);
+    const [loading , setLoading] = useState<boolean>(false)
 
     useEffect(() => {
+        setLoading(true)
         const fetchRooms = async () => {
             const rooms = await getRooms();
-            setRooms(rooms);
+            if(rooms){
+                const availableRooms = rooms.filter((room : Room_data) => room.status === 'available')
+                console.log(availableRooms)
+                setRooms(availableRooms);
+                setLoading(false)
+            }else {
+                setLoading(false)
+            }
         };
-        fetchRooms();
+        fetchRooms()
     }, [])
 
-    if (rooms.length === 0) return <Loader />
+    if (loading) return <Loader />
 
     return (
         <>
             <Nav />
             <div className="max-w-[1300px] w-full m-auto p-5">
-                {rooms ? <> <h1 className="text-center text-[clamp(20px,5vw,35px)] font-bold mt-0 md:mt-10">Rooms</h1>
+                {rooms.length > 0 ? <> <h1 className="text-center text-[clamp(20px,5vw,35px)] font-bold mt-0 md:mt-10">Rooms</h1>
                     <div className="grid gap-3 md:gap-10 lg:grid-cols-4 md:grid-cols-3 grid-cols-2  mt-3">
                         {rooms.map((room) => {
                             return (

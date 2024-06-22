@@ -5,7 +5,7 @@ import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuLabel,
 import { Button } from '../ui/button'
 import Image from 'next/image'
 import { Input } from '../ui/input'
-import { Bath, BookImageIcon, Home, LineChart, Package, Package2, PanelLeft, Search, Settings, ShoppingCart, Users2 } from 'lucide-react'
+import { Bath, BookImageIcon, Home, LineChart, Package, Package2, PanelLeft, Search, Settings, ShoppingCart, User, Users2 } from 'lucide-react'
 import { Breadcrumb, BreadcrumbItem, BreadcrumbLink, BreadcrumbList, BreadcrumbPage, BreadcrumbSeparator } from '../ui/breadcrumb'
 import Link from 'next/link'
 import { Sheet, SheetContent, SheetTrigger } from '../ui/sheet'
@@ -16,11 +16,13 @@ import BookingTable from './../table/BookingTable';
 import RoomTable from '../table/RoomTable'
 import { getBookings } from '@/lib/api'
 import useAuth from '../hooks/useAuth'
+import { useRouter } from 'next/navigation'
 
 function Dashboard({ rooms, users }: { rooms: Room_data[], users: Profile[] }) {
     const [tab, setTab] = useState('dashboard')
     const [bookings, setBookings] = useState<Booking_data[]>([]);
     const { token } = useAuth()
+    const router = useRouter()
 
     useEffect(() => {
         if (!token) return
@@ -36,7 +38,7 @@ function Dashboard({ rooms, users }: { rooms: Room_data[], users: Profile[] }) {
 
     const renderComponent = () => {
         if (tab === 'dashboard') {
-            return <div>Dashboard</div>
+            return <div className="min-h-screen w-full flex items-center justify-center font-bold text-3xl">Dashboard</div>
         } else if (tab === 'users') {
             return <UserTable data={users} />
         } else if (tab === 'bookings') {
@@ -177,9 +179,9 @@ function Dashboard({ rooms, users }: { rooms: Room_data[], users: Profile[] }) {
                                 </BreadcrumbLink>
                             </BreadcrumbItem>
                             <BreadcrumbSeparator />
-                            {tab === 'dashoard' && <BreadcrumbItem>
+                            {tab !== 'dashboard' && <BreadcrumbItem>
                                 <BreadcrumbLink asChild>
-                                    <Link href="#">{tab}</Link>
+                                    <Link className="capitalize" href="#">{tab}</Link>
                                 </BreadcrumbLink>
                             </BreadcrumbItem>}
                         </BreadcrumbList>
@@ -191,18 +193,19 @@ function Dashboard({ rooms, users }: { rooms: Room_data[], users: Profile[] }) {
                                 size="icon"
                                 className="overflow-hidden rounded-full"
                             >
-                                <Image
+                                <User className="text-gray-700"/>
+                                {/* <Image
                                     src="https://res.cloudinary.com/dkibnftac/image/upload/v1690208728/deku_ggqhox.jpg"
                                     width={36}
                                     height={36}
                                     alt="Avatar"
                                     className="overflow-hidden rounded-full"
-                                />
+                                /> */}
                             </Button>
                         </DropdownMenuTrigger>
                         <DropdownMenuContent align="end">
                             <DropdownMenuLabel>My Account</DropdownMenuLabel>
-                            <DropdownMenuItem onClick={logout}>Logout</DropdownMenuItem>
+                            <DropdownMenuItem onClick={() => logout(router)}>Logout</DropdownMenuItem>
                         </DropdownMenuContent>
                     </DropdownMenu>
                 </header>

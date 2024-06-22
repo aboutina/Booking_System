@@ -31,6 +31,7 @@ function LoginAdmin() {
         name: '',
         email: "",
         password: "",
+        role: 'admin'
     })
     const [phone, setPhone] = useState<string>()
     const router = useRouter()
@@ -53,12 +54,15 @@ function LoginAdmin() {
                 if (response.status === 200) {
                     console.log(response.data.token)
                     Cookies.set('authtoken', response.data.token, { secure: true, sameSite: 'strict' });
+                    toast("Successfully logged in!")
+                    localStorage.setItem('user', response.data.id)
+                    router.push('/dashboard')
                 }
             } else {
                 toast("Admin account doesn't exist!")
             }
         } catch (error: any) {
-            toast(error.response.data.message)
+            toast(`Error: ${error.response.statusText}`)
             console.log(error)
         }
     }
@@ -99,16 +103,16 @@ function LoginAdmin() {
         <div className="w-full min-h-screen flex items-center justify-center">
             <div className="grid gap-4 py-4 w-[300px] transition-all ease-linear duration-500">
                 <Tabs defaultValue="login" >
-                    <TabsList className="grid w-full grid-cols-2">
+                    <TabsList className="grid w-full grid-cols-1">
                         <TabsTrigger value="login">Sign In</TabsTrigger>
-                        <TabsTrigger value="register">Sign Up</TabsTrigger>
+                  
                     </TabsList>
                     <TabsContent value="login">
                         <Card>
                             <CardHeader>
                                 <CardTitle>Sign In</CardTitle>
                                 <CardDescription>
-                                    Enter your email and password belew
+                                    Enter your email and password below
                                 </CardDescription>
                             </CardHeader>
                             <CardContent className="space-y-2">
@@ -126,7 +130,7 @@ function LoginAdmin() {
                             </CardFooter>
                         </Card>
                     </TabsContent>
-                    <TabsContent value="register">
+                    {/* <TabsContent value="register">
                         <Card>
                             <CardHeader>
                                 <CardTitle>Sign Up</CardTitle>
@@ -135,6 +139,10 @@ function LoginAdmin() {
                                 </CardDescription>
                             </CardHeader>
                             <CardContent className="space-y-2">
+                            <div className="space-y-1">
+                                    <Label htmlFor="name">Name</Label>
+                                    <Input type="email" required id="name" value={userForm.name} onChange={handleChange} name="name" placeholder="Enter Name" />
+                                </div>
                                 <div className="space-y-1">
                                     <Label htmlFor="email">Email</Label>
                                     <Input type="email" required id="email" value={userForm.email} onChange={handleChange} name="email" placeholder="a@gmail.com" />
@@ -152,7 +160,7 @@ function LoginAdmin() {
                                 <Button onClick={register}>Submit</Button>
                             </CardFooter>
                         </Card>
-                    </TabsContent>
+                    </TabsContent> */}
                 </Tabs>
             </div>
         </div>

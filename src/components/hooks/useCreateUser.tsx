@@ -19,7 +19,6 @@ const useRegisterUser = () => {
             const newForm = {
                 ...userForm,
                 phone_number: phone,
-                role: 'guest',
             }
             const res = await createUser(newForm as User)
             if (res) {

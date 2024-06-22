@@ -1,4 +1,4 @@
-import React from 'react'
+import React, { useEffect, useState } from 'react'
 import { Card } from '../ui/card';
 import {
     Table,
@@ -21,10 +21,26 @@ import { Input } from '../ui/input';
 import { EditUser } from '../modal/EditUser';
 
 function UserTable({ data }: { data: Profile[] }) {
+    const [filtered , setFiltered] = useState( data || [])
+    const [filter , setFilter] = useState<string>('')
     function formatDate(dateString: string) {
         const options: Intl.DateTimeFormatOptions = { year: "numeric", month: "long", day: "numeric" };
         return new Date(dateString).toLocaleDateString(undefined, options);
     }
+
+    useEffect(() => {
+        console.log(data)
+        if (!filter) {
+            setFiltered(data as any)
+            return;
+        }
+        const results = data.filter((item) =>
+            item.name.toLowerCase().includes(filter.toLowerCase()) ||
+            item.email.toLowerCase().includes(filter.toLowerCase()) ||
+            item.phone_number.toLowerCase().includes(filter.toLowerCase())
+        )
+        setFiltered(results as any);
+    }, [filter])
 
     const removeUser = async (id: number) => {
         try {
@@ -44,6 +60,7 @@ function UserTable({ data }: { data: Profile[] }) {
                         type="search"
                         placeholder="Search..."
                         className="w-full rounded-lg bg-background pl-8 md:w-[200px] lg:w-[320px]"
+                        onChange={(e) => setFilter(e.target.value)}
                     />
                 </div>
                 <AddUser />
@@ -61,7 +78,7 @@ function UserTable({ data }: { data: Profile[] }) {
                         </TableRow>
                     </TableHeader>
                     <TableBody>
-                        {data?.map((user: Profile) => (
+                        {filtered?.map((user: Profile) => (
                             <TableRow className="font-semibold text-gray-600" key={user.id}>
                                 <TableCell className="font-medium">{user.id}</TableCell>
                                 <TableCell className="font-medium">{user.name}</TableCell>

@@ -9,7 +9,7 @@ import { useRouter } from 'next/navigation';
 export const useCreateBooking = ({ checkin, checkout, roomId }: UseCreateBooking) => {
     const [isLoading, setIsLoading] = useState(false);
     const [error, setError] = useState<string | null>(null);
-    const { token } = useAuth()
+    const { token , id } = useAuth()
     const router = useRouter()
 
     const handleBooking = async () => {
@@ -21,15 +21,18 @@ export const useCreateBooking = ({ checkin, checkout, roomId }: UseCreateBooking
         }
 
         try {
-            if (checkin && checkout) {
+            if (checkin && checkout && id) {
+                if(!roomId){
+                    return toast('Error: Room not available!')
+                }
                 const bookingData = {
-                    user_id: 1,
+                    user_id: parseFloat(id),
                     room_id: roomId,
                     start_date: checkin.toISOString().slice(0, 10), // format the date
                     end_date: checkout.toISOString().slice(0, 10), // format the date
                     status: "pending"
                 }
-
+                
                 const response = await createBooking(bookingData as Booking, token as string)
 
                 if (response) {

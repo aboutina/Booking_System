@@ -55,7 +55,7 @@ function LoginPage() {
                 toast('Login Success!')
             }
         } catch (error: any) {
-            toast(error.message)
+            toast(error.response.statusText)
             console.log(error)
         }
     }

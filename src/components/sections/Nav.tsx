@@ -5,12 +5,13 @@ import { useRouter } from 'next/navigation'
 import LoginPage from '../auth/LoginPage'
 import UserDropdown from '../modal/UserDropdown'
 import Sidebar from './Sidebar'
+import { Darkmode } from '../Darkmode'
 
 function Nav() {
     const { auth } = useAuth()
     const router = useRouter()
     return (
-        <div className="bg-[#0182B0]">
+        <div className="bg-[#0182B0] ">
             <div className="z-30 flex  max-w-[1300px] m-auto justify-between items-center py-5 px-3 text-black">
                 <Image onClick={() => router.push('/')} src="/assets/booking.png" alt="logo" width={100} height={100} />
                 <ul className=" gap-10 text-sm font-medium text-white lg:flex hidden cursor-pointer">
@@ -22,6 +23,7 @@ function Nav() {
                 <div className="lg:hidden block">
                     <Sidebar />
                 </div>
+                {/* <Darkmode /> */}
             </div>
         </div>
     )

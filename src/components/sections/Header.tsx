@@ -137,7 +137,15 @@ function Header() {
                             />
                         </PopoverContent>
                     </Popover>
-                    <Button onClick={handleBooking} variant="outline" className="font-normal text-muted-foreground"><BookCheck className="mr-2 h-4 w-4" />Book Now</Button>
+                    <Button onClick={() => {
+                        if(checkin && checkout){
+                            if(checkin > checkout){
+                                toast('Error: Check-in date must before the check-out date!')
+                            }else{
+                                handleBooking()
+                            }
+                        }
+                        }} variant="outline" className="font-normal text-muted-foreground"><BookCheck className="mr-2 h-4 w-4" />Book Now</Button>
                 </div>
             </div>
         </div>

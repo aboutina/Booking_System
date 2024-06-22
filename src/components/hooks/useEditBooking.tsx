@@ -1,7 +1,7 @@
 import React, { useState } from 'react'
 import useAuth from './useAuth';
 import { useRouter } from 'next/navigation';
-import { getRoom, updateBooking, updateRoom } from '@/lib/api';
+import { getBookings, getRoom, updateBooking, updateRoom } from '@/lib/api';
 import { Booking, Booking_data, Room } from '@/lib/interface';
 import { toast } from 'sonner';
 
@@ -10,6 +10,7 @@ function useEditBooking({ data, userId }: { data: Booking_data, userId: number }
     const [error, setError] = useState<string | null>(null);
     const { token } = useAuth()
     const router = useRouter()
+    console.log(data)
 
     const handleEditBooking = async () => {
         setIsLoading(true);
@@ -33,6 +34,16 @@ function useEditBooking({ data, userId }: { data: Booking_data, userId: number }
                 if (response) {
                     toast(`Success ${data.status} the booking!`)
                     // Update the room status to booked
+                    const resRoom = await getRoom(data.room_id)
+                    if(data.status === "cancelled" || data.status === "checked_out" && resRoom){
+                        const roomData = {
+                            type: resRoom.type,
+                            price: resRoom.price,
+                            status: 'available',
+                            room_number: resRoom.room_number,
+                        }
+                        await updateRoom(resRoom.id , roomData as Room , token )
+                    }
                 } else {
                     toast("Edit Booking failed: " + response.statusText)
                 }

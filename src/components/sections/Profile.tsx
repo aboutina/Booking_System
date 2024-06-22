@@ -93,6 +93,7 @@ function Profile({ data }: { data: ProfileType }) {
         }
     }
 
+
     return (
         <>
             <Nav />
@@ -134,7 +135,7 @@ function Profile({ data }: { data: ProfileType }) {
                             </TableRow>
                         </TableHeader>
                         <TableBody>
-                            {data?.bookings?.map((booking: Booking_data) => (
+                            {data.bookings?.map((booking: Booking_data) => (
                                 <TableRow className="font-semibold text-gray-600" key={booking.id}>
                                     <TableCell className="font-medium">{booking.room_id}</TableCell>
                                     <TableCell>{booking.start_date}</TableCell>

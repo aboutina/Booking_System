@@ -1,4 +1,4 @@
-import React, { useState } from 'react'
+import React, { useEffect, useState } from 'react'
 import { Card } from '../ui/card';
 import {
     Table,
@@ -17,6 +17,8 @@ import { EditBooking } from './../modal/EditBooking';
 import { toast } from 'sonner';
 import { deleteBooking } from '@/lib/api';
 import useAuth from '../hooks/useAuth';
+import { Search } from 'lucide-react';
+import { Input } from '../ui/input';
 
 interface BookingTableProps {
     data: Booking_data[];
@@ -53,10 +55,27 @@ const BookingTable: React.FC<BookingTableProps> = ({ data }) => {
         },
     });
     const { token } = useAuth()
+    const [filtered , setFiltered] = useState( data || [])
+    const [filter , setFilter] = useState<string>('')
     function formatDate(dateString: string) {
         const options: Intl.DateTimeFormatOptions = { year: "numeric", month: "long", day: "numeric" };
         return new Date(dateString).toLocaleDateString(undefined, options);
     }
+
+    useEffect(() => {
+        console.log(data)
+        if (!filter) {
+            setFiltered(data as any)
+            return;
+        }
+        const results = data.filter((item) =>
+            item.user.name.toLowerCase().includes(filter.toLowerCase()) ||
+            item.user.email.toLowerCase().includes(filter.toLowerCase()) ||
+            item.status.toLowerCase().includes(filter.toLowerCase()) ||
+            item.room.room_number.toLowerCase().includes(filter.toLowerCase())
+        )
+        setFiltered(results as any);
+    }, [filter])
 
     const removeBooking = async (id: number) => {
         if (!token) return
@@ -68,6 +87,19 @@ const BookingTable: React.FC<BookingTableProps> = ({ data }) => {
         }
     }
     return (
+        <>
+            <div className="flex justify-between items-center">
+                <div >
+                    <Search className="absolute left-2.5 top-2.5 h-4 w-4 text-muted-foreground" />
+                    <Input
+                        type="search"
+                        placeholder="Search..."
+                        className="w-full rounded-lg bg-background pl-8 md:w-[200px] lg:w-[320px]"
+                        onChange={(e) => setFilter(e.target.value)}
+                    />
+                </div>
+            </div>
+       
         <Card className="w-full ">
             <Table>
                 <TableCaption>A list of your recent bookings.</TableCaption>
@@ -81,7 +113,7 @@ const BookingTable: React.FC<BookingTableProps> = ({ data }) => {
                     </TableRow>
                 </TableHeader>
                 <TableBody>
-                    {Array.isArray(data) && data?.map((booking: Booking_data) => (
+                    {Array.isArray(filtered) && filtered?.map((booking: Booking_data) => (
                         <TableRow className="font-semibold text-gray-600" key={booking.id}>
                             <TableCell className="font-medium">{booking.room_id}</TableCell>
                             <TableCell >{booking.user.name}</TableCell>
@@ -114,6 +146,7 @@ const BookingTable: React.FC<BookingTableProps> = ({ data }) => {
                 </TableBody>
             </Table>
         </Card>
+        </>
     )
 }
 

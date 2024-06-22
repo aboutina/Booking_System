@@ -16,6 +16,7 @@ import { CalendarIcon } from "lucide-react"
 import { Calendar } from "../ui/calendar"
 import { useCreateBooking } from "../hooks/useCreateBooking"
 import { ReloadIcon } from "@radix-ui/react-icons"
+import { toast } from "sonner"
 
 export function BookNow({ roomId }: { roomId: number }) {
     const [checkin, setCheckin] = useState<Date | null>(null)
@@ -73,7 +74,7 @@ export function BookNow({ roomId }: { roomId: number }) {
                                 )}
                             >
                                 <CalendarIcon className="mr-2 h-4 w-4" />
-                                {checkout ? format(checkout, "PPP") : <span>Check in</span>}
+                                {checkout ? format(checkout, "PPP") : <span>Check out</span>}
                             </Button>
                         </PopoverTrigger>
                         <PopoverContent className="w-auto p-0">
@@ -90,7 +91,15 @@ export function BookNow({ roomId }: { roomId: number }) {
                     </Popover>
                 </div>
                 <DialogFooter>
-                    <Button onClick={handleBooking} type="submit">
+                    <Button onClick={() => {
+                        if(checkin && checkout){
+                            if(checkin > checkout){
+                                toast('Error: Checkin date must before the chekout date!')
+                            }else{
+                                handleBooking()
+                            }
+                        }
+                        }} type="submit">
                         {isLoading ? (
                             <>
                                 <ReloadIcon className="mr-2 h-4 w-4 animate-spin" />

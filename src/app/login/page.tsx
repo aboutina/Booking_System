@@ -24,14 +24,16 @@ import { toast } from "sonner"
 import { createUser } from "@/lib/api"
 import Cookies from 'js-cookie';
 import { Dialog, DialogTrigger, DialogContent } from "@/components/ui/dialog"
+import { User } from "@/lib/interface"
 
 function Page() {
+    const [phone, setPhone] = useState<string>()
     const [userForm, setUserForm] = useState({
         name: '',
         email: "",
-        password: "",
+        password: '',
     })
-    const [phone, setPhone] = useState<string>()
+    
     const router = useRouter()
 
     const login = async (e: React.MouseEvent) => {
@@ -49,12 +51,18 @@ function Page() {
             })
             if (response.status === 200) {
                 console.log(response.data.token)
+                toast("Success", {
+                    description: 'Login Successfully!',
+                })
+                localStorage.setItem('user', response.data.id)  
                 Cookies.set('authtoken', response.data.token, { secure: true, sameSite: 'strict' });
+                router.push('/')
             }
         } catch (error: any) {
             toast("Error", {
-                description: error.message,
+                description: error.response.statusText,
             })
+            console.log(error)
         }
     }
 
@@ -67,16 +75,42 @@ function Page() {
             return;
         }
         try {
-            createUser(userForm as any)
-                .then(data => console.log(data))
-                .catch(error => console.error(error));
-            router.push('/dashboard')
+            const newForm = {
+                name: userForm.name,
+                email: userForm.email,
+                password: userForm.password,
+                phone_number: phone,
+                role: 'guest',
+            }
+            const res = await createUser(newForm as User)
+            if (res) {
+                toast('Register Successfully!')
+            }
         } catch (error: any) {
-            toast("Error", {
-                description: error.response.data.message,
-            })
+            toast(error.response.data.message)
+            console.log(error)
         }
     }
+
+    // const register = async (e: React.MouseEvent) => {
+    //     e.preventDefault();
+    //     if (!userForm.email || !userForm.password) {
+    //         toast("Error", {
+    //             description: 'Email and password are required',
+    //         })
+    //         return;
+    //     }
+    //     try {
+    //         const user = {...userForm , phone}
+    //         createUser(user as any)
+    //             .then(data => console.log(data))
+    //             .catch(error => console.error(error));
+    //     } catch (error: any) {
+    //         toast("Error", {
+    //             description: error.response.data.message,
+    //         })
+    //     }
+    // }
 
     const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
         setUserForm({
@@ -124,6 +158,10 @@ function Page() {
                                 </CardDescription>
                             </CardHeader>
                             <CardContent className="space-y-2">
+                            <div className="space-y-1">
+                                    <Label htmlFor="name">Name</Label>
+                                    <Input type="email" required id="name" value={userForm.name} onChange={handleChange} name="name" placeholder="Enter name" />
+                                </div>
                                 <div className="space-y-1">
                                     <Label htmlFor="email">Email</Label>
                                     <Input type="email" required id="email" value={userForm.email} onChange={handleChange} name="email" placeholder="a@gmail.com" />

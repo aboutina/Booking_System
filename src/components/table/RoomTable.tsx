@@ -1,4 +1,4 @@
-import React from 'react'
+import React, { useEffect, useState } from 'react'
 import { Card } from '../ui/card';
 import {
     Table,
@@ -23,10 +23,26 @@ import { EditRoom } from '../modal/EditRoom';
 
 function RoomTable({ data }: { data: Room_data[] }) {
     const { token } = useAuth()
+    const [filtered , setFiltered] = useState( data || [])
+    const [filter , setFilter] = useState<string>('')
     function formatDate(dateString: string) {
         const options: Intl.DateTimeFormatOptions = { year: "numeric", month: "long", day: "numeric" };
         return new Date(dateString).toLocaleDateString(undefined, options);
     }
+
+    useEffect(() => {
+        if (!filter) {
+            setFiltered(data as any)
+            return;
+        }
+        const results = data.filter((item) =>
+            item.price.toLowerCase().includes(filter.toLowerCase()) ||
+            item.type.toLowerCase().includes(filter.toLowerCase()) ||
+            item.status.toLowerCase().includes(filter.toLowerCase()) ||
+            item.room_number.toLowerCase().includes(filter.toLowerCase())
+        )
+        setFiltered(results as any);
+    }, [filter])
 
     const removeRoom = async (id: number) => {
         if (!token) return
@@ -49,6 +65,7 @@ function RoomTable({ data }: { data: Room_data[] }) {
                         type="search"
                         placeholder="Search..."
                         className="w-full rounded-lg bg-background pl-8 md:w-[200px] lg:w-[320px]"
+                        onChange={(e) => setFilter(e.target.value)}
                     />
                 </div>
                 <AddRoom />
@@ -66,11 +83,11 @@ function RoomTable({ data }: { data: Room_data[] }) {
                         </TableRow>
                     </TableHeader>
                     <TableBody>
-                        {data?.map((room: Room_data) => (
+                        {filtered?.map((room: Room_data) => (
                             <TableRow className="font-semibold text-gray-600" key={room.id}>
                                 <TableCell className="font-medium">{room.room_number}</TableCell>
                                 <TableCell className="font-medium">{room.price}</TableCell>
-                                <TableCell>{room.type}</TableCell>
+                                <TableCell className="capitalize">{room.type}</TableCell>
                                 <TableCell className="capitalize">{room.status}</TableCell>
                                 <TableCell>{formatDate(room.created_at)}</TableCell>
                                 <TableCell className="capitalize p-0">
